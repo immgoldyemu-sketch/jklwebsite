@@ -44,6 +44,13 @@
   a{color:inherit;}
   button{font-family:inherit;cursor:pointer;}
 
+  .setup-banner{
+    display:none;background:#FFF4E5;border-bottom:1px solid #FFD9A8;color:#8A5A00;
+    padding:10px 20px;font-size:13px;text-align:center;font-weight:600;
+  }
+  .setup-banner.show{display:block;}
+  .setup-banner code{background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:5px;}
+
   /* ---------- HERO ---------- */
   .hero{
     position:relative;
@@ -298,14 +305,9 @@
   .map-btn:hover{background:rgba(47,111,255,0.22);border-color:var(--electric);}
   .footer-bottom{
     max-width:1180px;margin:34px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);
-    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+    display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;
   }
   .footer-bottom .copy{font-size:12.5px;color:rgba(255,255,255,0.4);}
-  .admin-link{
-    font-size:12px;color:rgba(255,255,255,0.35);background:none;border:none;
-    text-decoration:underline;text-underline-offset:3px;transition:color .2s;
-  }
-  .admin-link:hover{color:rgba(255,255,255,0.75);}
 
   /* ---------- MODAL ---------- */
   .overlay{
@@ -336,7 +338,7 @@
   .field{margin-bottom:16px;}
   .field label{display:block;font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:0.01em;}
   .field .hint{font-size:11.5px;color:var(--muted);margin-top:5px;}
-  input[type=text],input[type=password],input[type=url],textarea,select{
+  input[type=text],input[type=password],input[type=url],input[type=email],textarea,select{
     width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid var(--line);
     font-family:inherit;font-size:14px;color:var(--text);background:var(--paper);
     transition:border-color .2s, box-shadow .2s;
@@ -368,11 +370,6 @@
     padding:10px 18px;border-radius:9px;font-weight:600;font-size:13.5px;transition:border-color .2s;
   }
   .btn-outline:hover{border-color:var(--electric);}
-  .btn-danger-outline{
-    background:#fff;border:1.5px solid #FFD3D6;color:var(--danger);
-    padding:8px 13px;border-radius:8px;font-weight:600;font-size:12.5px;
-  }
-  .btn-danger-outline:hover{background:#FFF3F3;}
   .form-row{display:flex;gap:12px;}
   .form-row .field{flex:1;}
 
@@ -437,6 +434,10 @@
 </head>
 <body>
 
+<div class="setup-banner" id="setupBanner">
+  ⚙️ Firebase isn't configured yet — open <code>index.html</code> and fill in <code>firebaseConfig</code> near the bottom. See SETUP-GUIDE.md.
+</div>
+
 <div class="hero">
   <svg class="circuit-svg" viewBox="0 0 600 500" preserveAspectRatio="xMidYMid slice">
     <path class="accent" d="M600,60 L420,60 L420,140 L320,140 L320,90 L230,90" style="animation-delay:.05s"/>
@@ -451,7 +452,7 @@
 
   <div class="hero-top">
     <div class="brand">
-      <div class="brand-mark">
+      <div class="brand-mark" id="logoMark">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="9" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3"/><circle cx="12" cy="13.5" r="1.4" fill="white" stroke="none"/></svg>
       </div>
       <div>
@@ -514,11 +515,11 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <span class="copy" style="margin:0 auto;">© <span id="year"></span> JKL Enterprises. All rights reserved.</span>
+    <span class="copy">© <span id="year"></span> JKL Enterprises. All rights reserved.</span>
   </div>
 </footer>
 
-<!-- PASSWORD GATE MODAL -->
+<!-- LOGIN MODAL -->
 <div class="overlay" id="gateOverlay">
   <div class="modal">
     <div class="modal-head">
@@ -528,14 +529,19 @@
     <div class="modal-body">
       <div class="pw-gate">
         <div class="lockbig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-        <h3>Enter admin password</h3>
+        <h3>Admin sign in</h3>
         <p>This area is for JKL Enterprises staff only.</p>
       </div>
       <div class="field">
-        <input type="password" id="pwInput" placeholder="Password">
-        <div class="pw-error" id="pwError">Incorrect password. Please try again.</div>
+        <label>Email</label>
+        <input type="email" id="emailInput" placeholder="you@example.com">
       </div>
-      <button class="btn-solid" style="width:100%;" id="pwSubmitBtn">Unlock Admin Panel</button>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="pwInput" placeholder="Password">
+        <div class="pw-error" id="pwError">Incorrect email or password.</div>
+      </div>
+      <button class="btn-solid" style="width:100%;" id="pwSubmitBtn">Sign In</button>
     </div>
   </div>
 </div>
@@ -569,7 +575,7 @@
             <input type="file" accept="image/*" id="imgInput">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
             <div class="ft">Click to upload a product photo</div>
-            <div class="fs">JPG or PNG, will be optimised automatically</div>
+            <div class="fs">JPG or PNG, optimised automatically</div>
           </div>
           <img id="imgPreview" class="preview-img" style="display:none;">
         </div>
@@ -626,8 +632,45 @@
 
 <div class="toast" id="toast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span id="toastMsg"></span></div>
 
-<script>
+<script type="module">
 document.getElementById('year').textContent = new Date().getFullYear();
+
+/* =====================================================================
+   1) FIREBASE CONFIG — REPLACE THESE VALUES
+   Get them from: Firebase Console → Project Settings → General → Your apps
+   See SETUP-GUIDE.md for the full walkthrough.
+===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyA7IlTjOI3JbIFDtEw42yMEiBuLejr2GkU",
+  authDomain: "jklenterprises-f3715.firebaseapp.com",
+  projectId: "jklenterprises-f3715",
+  storageBucket: "jklenterprises-f3715.firebasestorage.app",
+  messagingSenderId: "376208509711",
+  appId: "1:376208509711:web:eca5c564758fb06e680c7a"
+};
+/* ===================================================================== */
+
+const isConfigured = firebaseConfig.apiKey !== "YOUR_API_KEY_HERE";
+if(!isConfigured){
+  document.getElementById('setupBanner').classList.add('show');
+}
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, doc, setDoc, addDoc, deleteDoc,
+  onSnapshot, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+  reauthenticateWithCredential, EmailAuthProvider, updatePassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+let app, db, auth;
+if(isConfigured){
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+}
 
 const BADGE_COLORS = ['#2F6FFF','#FF8A3D','#16C784','#8B5CF6','#FF4D8D','#1B4FDB'];
 function colorForCategory(cat){
@@ -635,30 +678,12 @@ function colorForCategory(cat){
   return BADGE_COLORS[Math.abs(h)%BADGE_COLORS.length];
 }
 
-const DEFAULT_PASSWORD = 'jkl@switches1867';
-let state = { products: [], settings: { factoryMapLink: '', password: DEFAULT_PASSWORD } };
+let products = [];
+let factoryMapLink = '';
 let isAdmin = false;
 let editingId = null;
 let activeCategory = 'All';
-
-async function loadState(){
-  try{
-    const res = await window.storage.get('catalog-data', true);
-    if(res && res.value){
-      const parsed = JSON.parse(res.value);
-      state = { products: parsed.products || [], settings: { factoryMapLink: parsed.settings?.factoryMapLink || '', password: parsed.settings?.password || DEFAULT_PASSWORD } };
-    }
-  }catch(e){ /* no data yet, keep defaults */ }
-  render();
-}
-
-async function saveState(){
-  try{
-    await window.storage.set('catalog-data', JSON.stringify(state), true);
-  }catch(e){
-    showToast('Could not save — please try again', true);
-  }
-}
+let pendingImage = null;
 
 function showToast(msg){
   const t = document.getElementById('toast');
@@ -667,11 +692,17 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'), 2400);
 }
 
-function uniqueCategories(){
-  const set = new Set(state.products.map(p=>p.category).filter(Boolean));
-  return Array.from(set);
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str||'';
+  return d.innerHTML;
 }
 
+function uniqueCategories(){
+  return Array.from(new Set(products.map(p=>p.category).filter(Boolean)));
+}
+
+/* ---------- RENDER ---------- */
 function render(){
   renderCategoryRow();
   renderGrid();
@@ -682,17 +713,12 @@ function render(){
 function renderCategoryRow(){
   const cats = uniqueCategories();
   const row = document.getElementById('catRow');
-  if(cats.length === 0){
-    document.getElementById('catalogue').querySelector('.cat-row').style.display='none';
-    return;
-  }
-  document.getElementById('catalogue').querySelector('.cat-row').style.display='flex';
+  const wrap = document.querySelector('#catalogue .cat-row');
+  if(cats.length === 0){ wrap.style.display='none'; return; }
+  wrap.style.display='flex';
   row.innerHTML = '<span class="cat-label">Filter</span>';
-  const allChip = makeChip('All', '#2F6FFF', activeCategory==='All');
-  row.appendChild(allChip);
-  cats.forEach(c=>{
-    row.appendChild(makeChip(c, colorForCategory(c), activeCategory===c));
-  });
+  row.appendChild(makeChip('All', '#2F6FFF', activeCategory==='All'));
+  cats.forEach(c=> row.appendChild(makeChip(c, colorForCategory(c), activeCategory===c)));
 }
 
 function makeChip(label, color, active){
@@ -706,15 +732,15 @@ function makeChip(label, color, active){
 
 function renderGrid(){
   const grid = document.getElementById('grid');
-  const list = activeCategory==='All' ? state.products : state.products.filter(p=>p.category===activeCategory);
+  const list = activeCategory==='All' ? products : products.filter(p=>p.category===activeCategory);
   document.getElementById('prodCount').textContent = list.length ? `${list.length} PRODUCT${list.length>1?'S':''}` : '';
 
   if(list.length===0){
     grid.innerHTML = `
       <div class="empty-state">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>
-        <h3>${state.products.length===0 ? 'Catalogue coming soon' : 'No products in this category'}</h3>
-        <p>${state.products.length===0 ? 'Our product range is being added. Please check back shortly, or call us directly for enquiries.' : 'Try another category from the filter above.'}</p>
+        <h3>${products.length===0 ? 'Catalogue coming soon' : 'No products in this category'}</h3>
+        <p>${products.length===0 ? 'Our product range is being added. Please check back shortly, or call us directly for enquiries.' : 'Try another category from the filter above.'}</p>
       </div>`;
     return;
   }
@@ -735,8 +761,8 @@ function renderGrid(){
 
 function renderMapButton(){
   const wrap = document.getElementById('mapBtnWrap');
-  if(state.settings.factoryMapLink){
-    wrap.innerHTML = `<a class="map-btn" href="${state.settings.factoryMapLink}" target="_blank" rel="noopener">
+  if(factoryMapLink){
+    wrap.innerHTML = `<a class="map-btn" href="${factoryMapLink}" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
       View on Google Maps
     </a>`;
@@ -746,18 +772,27 @@ function renderMapButton(){
 }
 
 function renderCatDatalist(){
-  const dl = document.getElementById('catList');
-  dl.innerHTML = uniqueCategories().map(c=>`<option value="${escapeHtml(c)}">`).join('');
+  document.getElementById('catList').innerHTML = uniqueCategories().map(c=>`<option value="${escapeHtml(c)}">`).join('');
 }
 
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str||'';
-  return d.innerHTML;
+/* ---------- LIVE DATA (Firestore) ---------- */
+if(isConfigured){
+  onSnapshot(collection(db, 'products'), (snap)=>{
+    products = [];
+    snap.forEach(d=> products.push({ id:d.id, ...d.data() }));
+    products.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
+    render();
+    if(isAdmin) renderAdminList();
+  }, (err)=>{ console.error(err); });
+
+  onSnapshot(doc(db,'settings','main'), (d)=>{
+    factoryMapLink = d.exists() ? (d.data().factoryMapLink||'') : '';
+    renderMapButton();
+    document.getElementById('mapInput').value = factoryMapLink;
+  }, (err)=>{ console.error(err); });
 }
 
 /* ---------- IMAGE HANDLING ---------- */
-let pendingImage = null;
 document.getElementById('imgInput').addEventListener('change', function(e){
   const file = e.target.files[0];
   if(!file) return;
@@ -765,14 +800,14 @@ document.getElementById('imgInput').addEventListener('change', function(e){
   reader.onload = function(evt){
     const img = new Image();
     img.onload = function(){
-      const maxW = 900;
+      const maxW = 700;
       const scale = Math.min(1, maxW/img.width);
       const canvas = document.createElement('canvas');
       canvas.width = img.width*scale;
       canvas.height = img.height*scale;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img,0,0,canvas.width,canvas.height);
-      pendingImage = canvas.toDataURL('image/jpeg', 0.8);
+      pendingImage = canvas.toDataURL('image/jpeg', 0.7);
       const prev = document.getElementById('imgPreview');
       prev.src = pendingImage;
       prev.style.display='block';
@@ -787,13 +822,14 @@ const gateOverlay = document.getElementById('gateOverlay');
 const adminOverlay = document.getElementById('adminOverlay');
 
 function openGate(){
+  if(!isConfigured){ showToast('Set up Firebase first — see SETUP-GUIDE.md'); return; }
   document.getElementById('pwInput').value='';
+  document.getElementById('emailInput').value='';
   document.getElementById('pwError').classList.remove('show');
   gateOverlay.classList.add('open');
-  document.getElementById('pwInput').focus();
 }
 
-/* Hidden admin access #1: type the word "jkladmin" anywhere on the page */
+/* Hidden admin access #1: type this word anywhere on the page */
 let keyBuffer = '';
 const SECRET_CODE = 'jkladmin';
 document.addEventListener('keydown', (e)=>{
@@ -803,41 +839,45 @@ document.addEventListener('keydown', (e)=>{
     if(keyBuffer === SECRET_CODE){ openGate(); keyBuffer=''; }
   }
 });
-
-/* Hidden admin access #2: click the logo mark 5 times within 2.5 seconds */
+/* Hidden admin access #2: click the logo mark 5 times within 2.5s */
 let logoClicks = [];
-document.querySelector('.brand-mark').addEventListener('click', ()=>{
+document.getElementById('logoMark').addEventListener('click', ()=>{
   const now = Date.now();
   logoClicks.push(now);
   logoClicks = logoClicks.filter(t => now - t < 2500);
   if(logoClicks.length >= 5){ openGate(); logoClicks=[]; }
 });
-
 /* Hidden admin access #3: visiting the page with #admin in the URL */
 if(window.location.hash === '#admin'){ openGate(); }
+
 document.getElementById('gateCloseBtn').addEventListener('click', ()=>gateOverlay.classList.remove('open'));
 gateOverlay.addEventListener('click', (e)=>{ if(e.target===gateOverlay) gateOverlay.classList.remove('open'); });
 
-function attemptLogin(){
-  const val = document.getElementById('pwInput').value;
-  if(val === state.settings.password){
-    isAdmin = true;
+async function attemptLogin(){
+  const email = document.getElementById('emailInput').value.trim();
+  const pw = document.getElementById('pwInput').value;
+  try{
+    await signInWithEmailAndPassword(auth, email, pw);
     gateOverlay.classList.remove('open');
-    openAdminPanel();
-  } else {
+  }catch(err){
     document.getElementById('pwError').classList.add('show');
   }
 }
 document.getElementById('pwSubmitBtn').addEventListener('click', attemptLogin);
 document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') attemptLogin(); });
 
-function openAdminPanel(){
-  document.getElementById('mapInput').value = state.settings.factoryMapLink || '';
-  renderAdminList();
-  adminOverlay.classList.add('open');
+if(isConfigured){
+  onAuthStateChanged(auth, (user)=>{
+    isAdmin = !!user;
+    if(isAdmin){
+      adminOverlay.classList.add('open');
+      renderAdminList();
+    }
+  });
 }
+
 document.getElementById('adminCloseBtn').addEventListener('click', ()=>adminOverlay.classList.remove('open'));
-document.getElementById('logoutBtn').addEventListener('click', ()=>{ isAdmin=false; adminOverlay.classList.remove('open'); });
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{ await signOut(auth); adminOverlay.classList.remove('open'); });
 adminOverlay.addEventListener('click', (e)=>{ if(e.target===adminOverlay) adminOverlay.classList.remove('open'); });
 
 /* ---------- ADMIN TABS ---------- */
@@ -858,23 +898,21 @@ document.getElementById('saveProductBtn').addEventListener('click', async ()=>{
   const description = document.getElementById('descInput').value.trim();
   if(!name){ showToast('Please enter a product name'); return; }
 
-  if(editingId){
-    const p = state.products.find(x=>x.id===editingId);
-    p.name=name; p.category=category; p.description=description;
-    if(pendingImage) p.image=pendingImage;
-    showToast('Product updated');
-  } else {
-    state.products.unshift({
-      id: 'p_'+Date.now()+Math.random().toString(36).slice(2,7),
-      name, category, description,
-      image: pendingImage || ''
-    });
-    showToast('Product added');
+  try{
+    if(editingId){
+      const existing = products.find(x=>x.id===editingId);
+      const payload = { name, category, description, image: pendingImage || existing.image || '', createdAt: existing.createdAt || Date.now() };
+      await setDoc(doc(db,'products',editingId), payload);
+      showToast('Product updated');
+    } else {
+      await addDoc(collection(db,'products'), { name, category, description, image: pendingImage || '', createdAt: Date.now() });
+      showToast('Product added');
+    }
+    resetProductForm();
+  }catch(err){
+    showToast('Save failed — image may be too large, try a smaller photo');
+    console.error(err);
   }
-  await saveState();
-  resetProductForm();
-  render();
-  renderAdminList();
 });
 
 document.getElementById('cancelEditBtn').addEventListener('click', resetProductForm);
@@ -894,13 +932,13 @@ function resetProductForm(){
 function renderAdminList(){
   const listEl = document.getElementById('adminProductList');
   const emptyEl = document.getElementById('adminEmpty');
-  if(state.products.length===0){
+  if(products.length===0){
     listEl.innerHTML='';
     emptyEl.style.display='block';
     return;
   }
   emptyEl.style.display='none';
-  listEl.innerHTML = state.products.map(p=>`
+  listEl.innerHTML = products.map(p=>`
     <div class="admin-product-row">
       ${p.image ? `<img src="${p.image}">` : `<div class="no-thumb"></div>`}
       <div class="info">
@@ -916,7 +954,7 @@ function renderAdminList(){
 
   listEl.querySelectorAll('.icon-btn.edit').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      const p = state.products.find(x=>x.id===btn.dataset.id);
+      const p = products.find(x=>x.id===btn.dataset.id);
       editingId = p.id;
       pendingImage = null;
       document.getElementById('nameInput').value = p.name;
@@ -932,10 +970,7 @@ function renderAdminList(){
   listEl.querySelectorAll('.icon-btn.del').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       if(!confirm('Remove this product from the catalogue?')) return;
-      state.products = state.products.filter(x=>x.id!==btn.dataset.id);
-      await saveState();
-      render();
-      renderAdminList();
+      await deleteDoc(doc(db,'products',btn.dataset.id));
       showToast('Product removed');
     });
   });
@@ -943,9 +978,8 @@ function renderAdminList(){
 
 /* ---------- SETTINGS: MAP LINK ---------- */
 document.getElementById('saveMapBtn').addEventListener('click', async ()=>{
-  state.settings.factoryMapLink = document.getElementById('mapInput').value.trim();
-  await saveState();
-  render();
+  const val = document.getElementById('mapInput').value.trim();
+  await setDoc(doc(db,'settings','main'), { factoryMapLink: val }, { merge:true });
   showToast('Factory location saved');
 });
 
@@ -955,25 +989,27 @@ document.getElementById('changePwBtn').addEventListener('click', async ()=>{
   const nw = document.getElementById('newPwInput').value;
   const cf = document.getElementById('confirmPwInput').value;
   const errEl = document.getElementById('pwChangeError');
-  if(cur !== state.settings.password){
-    errEl.textContent='Current password is incorrect.'; errEl.classList.add('show'); return;
-  }
-  if(nw.length < 4){
-    errEl.textContent='New password should be at least 4 characters.'; errEl.classList.add('show'); return;
+  if(nw.length < 6){
+    errEl.textContent='New password should be at least 6 characters.'; errEl.classList.add('show'); return;
   }
   if(nw !== cf){
     errEl.textContent='New password and confirmation do not match.'; errEl.classList.add('show'); return;
   }
-  errEl.classList.remove('show');
-  state.settings.password = nw;
-  await saveState();
-  document.getElementById('curPwInput').value='';
-  document.getElementById('newPwInput').value='';
-  document.getElementById('confirmPwInput').value='';
-  showToast('Password updated');
+  try{
+    const cred = EmailAuthProvider.credential(auth.currentUser.email, cur);
+    await reauthenticateWithCredential(auth.currentUser, cred);
+    await updatePassword(auth.currentUser, nw);
+    errEl.classList.remove('show');
+    document.getElementById('curPwInput').value='';
+    document.getElementById('newPwInput').value='';
+    document.getElementById('confirmPwInput').value='';
+    showToast('Password updated');
+  }catch(err){
+    errEl.textContent='Current password is incorrect.'; errEl.classList.add('show');
+  }
 });
 
-loadState();
+render();
 </script>
 </body>
 </html>
