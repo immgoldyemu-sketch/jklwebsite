@@ -63,5 +63,35 @@ const PRODUCTS = [
   category: "Modular Switches",
   description: "Compact matte-finish switch rated for everyday home and office wiring.",
   image: "images/005.jpg"
+},
+   {
+  name: "Modular 6A One-Way Switch",
+  category: "Modular Switches",
+  description: "Compact matte-finish switch rated for everyday home and office wiring.",
+  image: "images/006.jpg"
+},
+   {
+  name: "Modular 6A One-Way Switch",
+  category: "Modular Switches",
+  description: "Compact matte-finish switch rated for everyday home and office wiring.",
+  image: "images/007.jpg"
+},
+   {
+  name: "Modular 6A One-Way Switch",
+  category: "Modular Switches",
+  description: "Compact matte-finish switch rated for everyday home and office wiring.",
+  image: "images/008.jpg"
+},
+   {
+  name: "Modular 6A One-Way Switch",
+  category: "Modular Switches",
+  description: "Compact matte-finish switch rated for everyday home and office wiring.",
+  image: "images/009.jpg"
+},
+   {
+  name: "Modular 6A One-Way Switch",
+  category: "Modular Switches",
+  description: "Compact matte-finish switch rated for everyday home and office wiring.",
+  image: "images/010.jpg"
 }
 ];
