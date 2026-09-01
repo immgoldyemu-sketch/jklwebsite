@@ -33,5 +33,5 @@ const PRODUCTS = [
   category: "Modular Switches",
   description: "Compact matte-finish switch rated for everyday home and office wiring.",
   image: "images/ToggleSwitch01.jpg"
-},
+}
 ];
