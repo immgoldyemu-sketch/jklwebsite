@@ -28,12 +28,10 @@ const SETTINGS = {
 };
 
 const PRODUCTS = [
-  // Your products will go here. See the instructions above for the format.
-  // Example (uncomment and edit, or copy this block to add a product):
-   {
-     name: "Toggle Switch 6AMPS",
-     category: "Toggle Switches",
-     description: "Best in the market toggle switch.",
-     image: "images/ToggleSwitch01.jpg"
-   }
+ {
+  name: "Modular 6A One-Way Switch",
+  category: "Modular Switches",
+  description: "Compact matte-finish switch rated for everyday home and office wiring.",
+  image: "images/ToggleSwitch01.jpg"
+}
 ];
